@@ -10,6 +10,8 @@ public abstract class MyJsonNode {
 
     public abstract String toJson();
 
+    public abstract void accept(MyJsonVisitor v);
+
     // nested static classes: all known sub-classes  of JsonNode
 
     public static class MyNullJsonNode extends MyJsonNode {
@@ -17,6 +19,11 @@ public abstract class MyJsonNode {
         @Override
         public String toJson() {
             return "null";
+        }
+
+        @Override
+        public void accept(MyJsonVisitor v) {
+            v.caseNull(this);
         }
 
     }
@@ -35,6 +42,11 @@ public abstract class MyJsonNode {
             return "\"" + value.replace("\"", "\\\"") + "\"";
         }
 
+        @Override
+        public void accept(MyJsonVisitor v) {
+            v.caseText(this);
+        }
+
     }
 
     public static class MyNumericJsonNode extends MyJsonNode {
@@ -44,6 +56,12 @@ public abstract class MyJsonNode {
         public String toJson() {
             return Double.toString(value);
         }
+
+        @Override
+        public void accept(MyJsonVisitor v) {
+            v.caseNumeric(this);
+        }
+
     }
 
     public static class MyBooleanJsonNode extends MyJsonNode {  public boolean value;
@@ -51,6 +69,11 @@ public abstract class MyJsonNode {
         @Override
         public String toJson() {
             return value? "true" : "false";
+        }
+
+        @Override
+        public void accept(MyJsonVisitor v) {
+            v.caseBoolean(this);
         }
 
     }
@@ -61,6 +84,11 @@ public abstract class MyJsonNode {
         @Override
         public String toJson() {
             return "[" + child.stream().map(e -> e.toJson()).collect(Collectors.joining(", ")) + "]";
+        }
+
+        @Override
+        public void accept(MyJsonVisitor v) {
+            v.caseArray(this);
         }
 
         public void add(MyObjectJsonNode node) {
@@ -84,6 +112,11 @@ public abstract class MyJsonNode {
             return "{" + fields.entrySet().stream().map(
                     e -> "\"" + e.getKey() +"\":" + e.getValue().toJson()
                 ).collect(Collectors.joining(", ")) + "}";
+        }
+
+        @Override
+        public void accept(MyJsonVisitor v) {
+            v.caseObject(this);
         }
 
     }

@@ -55,5 +55,12 @@ public class JsonMain {
 
         String json3 = myArray.toJson();
         System.out.println("Json again.. : " + json3);
+
+        String json4 = new JsonWriter().toJson(myArray);
+        System.out.println("Json4 again.. : " + json4);
+
+        MyJsonTextVisitor myJsonTextVisitor = new MyJsonTextVisitor();
+        myArray.accept(myJsonTextVisitor);
+        System.out.println("Json (visitor) again.. : " + myJsonTextVisitor.result);
     }
 }
